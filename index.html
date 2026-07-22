@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bank Konten — Ditranmas Kemendukbangga/BKKBN</title>
+<meta name="description" content="Arsip konten resmi Direktorat Bina Peran Serta Masyarakat, Kemendukbangga/BKKBN — cari dan unduh konten kapan saja." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --navy: #182644;
+    --navy-2: #24365E;
+    --gold: #C6862E;
+    --gold-pale: #F3E4C6;
+    --paper: #F1EFE6;
+    --surface: #FFFFFF;
+    --ink: #26251F;
+    --ink-muted: #6B685D;
+    --line: #DBD6C7;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .site-header { background: var(--navy); color: #fff; padding: 48px 0 40px; }
+  .site-header .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 12px;
+  }
+  .site-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .site-header .lead { font-size: 16px; color: #D8DCE6; margin: 0; max-width: 44ch; }
+  main.wrap { padding-top: 32px; padding-bottom: 64px; }
+  .controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  #search, #category {
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  #search { flex: 1 1 280px; }
+  #category { flex: 0 1 220px; }
+  #search:focus-visible, #category:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 1px;
+  }
+  .count { font-size: 13px; color: var(--ink-muted); margin: 0 0 20px; }
+  .status { padding: 32px 0; text-align: center; color: var(--ink-muted); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(24, 38, 68, 0.08); }
+  .card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .kode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--navy);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .tag { font-size: 11px; font-weight: 600; color: var(--navy); background: var(--gold-pale); border-radius: 4px; padding: 2px 8px; }
+  .tag-muted { color: var(--ink-muted); background: var(--paper); }
+  .judul { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 500; margin: 0; line-height: 1.3; }
+  .caption { font-size: 13.5px; color: var(--ink-muted); margin: 0; white-space: pre-line; }
+  .btn {
+    margin-top: auto;
+    display: inline-block;
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: var(--navy-2); }
+  .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .btn-disabled { background: var(--paper); color: var(--ink-muted); border: 1px dashed var(--line); cursor: default; }
+  .site-footer { border-top: 1px solid var(--line); padding: 24px; text-align: center; font-size: 12.5px; color: var(--ink-muted); }
+  @media (max-width: 600px) {
+    .controls { flex-direction: column; }
+    #category { flex-basis: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <p class="eyebrow">Direktorat Bina Peran Serta Masyarakat &middot; Kemendukbangga/BKKBN</p>
+      <h1>Bank Konten</h1>
+      <p class="lead">Arsip konten resmi yang bisa dicari dan diunduh siapa saja.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="controls">
+      <input id="search" type="text" placeholder="Cari judul atau kata kunci..." aria-label="Cari konten" />
+      <select id="category" aria-label="Filter kategori">
+        <option value="__all__">Semua kategori</option>
+      </select>
+    </div>
+    <p id="count" class="count" aria-live="polite">Memuat konten&hellip;</p>
+    <p id="status" class="status" style="display:none;"></p>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Diproduksi oleh Direktorat Bina Peran Serta Masyarakat (Ditranmas), Kemendukbangga/BKKBN.</p>
+  </footer>
+
+<script>
+  var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM1hUO5g2v9dHkylwc9PxIRjK0gfU6z-nEg58y2Y7fD7ps6ZBkPKBY7q6i3DsKh8-8ksy1wKgKqUPC/pub?gid=667875816&single=true&output=csv";
+
+  var allItems = [];
+  var grid = document.getElementById('grid');
+  var statusEl = document.getElementById('status');
+  var searchInput = document.getElementById('search');
+  var categorySelect = document.getElementById('category');
+  var countEl = document.getElementById('count');
+
+  function isValidUrl(str) {
+    if (!str) return false;
+    var s = str.trim().toLowerCase();
+    return s.indexOf('http://') === 0 || s.indexOf('https://') === 0;
+  }
+
+  function truncate(text, max) {
+    if (!text) return '';
+    var clean = text.trim();
+    if (clean.length <= max) return clean;
+    return clean.slice(0, max).trim() + '\u2026';
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function renderCards(items) {
+    if (items.length === 0) {
+      grid.innerHTML = '';
+      statusEl.textContent = 'Tidak ada konten yang cocok. Coba kata kunci lain.';
+      statusEl.style.display = 'block';
+      return;
+    }
+    statusEl.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var kode = escapeHtml(item['Kode Konten'] || '');
+      var kategori = (item['Kategori'] || '').trim();
+      var judul = escapeHtml(item['Judul'] || 'Tanpa judul');
+      var caption = escapeHtml(truncate(item['Caption'], 160));
+      var link = (item['Link File'] || '').trim();
+      var hasLink = isValidUrl(link);
+
+      html += '<article class="card">';
+      html += '<div class="card-top">';
+      if (kode) html += '<span class="kode">' + kode + '</span>';
+      html += kategori
+        ? '<span class="tag">' + escapeHtml(kategori) + '</span>'
+        : '<span class="tag tag-muted">Belum dikategorikan</span>';
+      html += '</div>';
+      html += '<h3 class="judul">' + judul + '</h3>';
+      if (caption) html += '<p class="caption">' + caption + '</p>';
+      html += hasLink
+        ? '<a class="btn" href="' + escapeHtml(link) + '" target="_blank" rel="noopener">Lihat &amp; unduh</a>'
+        : '<span class="btn btn-disabled">Tautan belum tersedia</span>';
+      html += '</article>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function applyFilters() {
+    var q = searchInput.value.trim().toLowerCase();
+    var cat = categorySelect.value;
+    var filtered = allItems.filter(function (item) {
+      var matchesQuery = !q ||
+        (item['Judul'] || '').toLowerCase().indexOf(q) !== -1 ||
+        (item['Caption'] || '').toLowerCase().indexOf(q) !== -1 ||
+        (item['Kode Konten'] || '').toLowerCase().indexOf(q) !== -1;
+      var itemCat = (item['Kategori'] || '').trim();
+      var matchesCat = cat === '__all__' ||
+        (cat === '__uncategorized__' ? itemCat === '' : itemCat === cat);
+      return matchesQuery && matchesCat;
+    });
+    countEl.textContent = filtered.length + ' dari ' + allItems.length + ' konten';
+    renderCards(filtered);
+  }
+
+  function populateCategories(items) {
+    var cats = [];
+    var seen = {};
+    var hasUncategorized = false;
+    items.forEach(function (item) {
+      var c = (item['Kategori'] || '').trim();
+      if (c) {
+        if (!seen[c]) { seen[c] = true; cats.push(c); }
+      } else {
+        hasUncategorized = true;
+      }
+    });
+    cats.sort();
+    var html = '<option value="__all__">Semua kategori</option>';
+    cats.forEach(function (c) {
+      html += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+    });
+    if (hasUncategorized) html += '<option value="__uncategorized__">Belum dikategorikan</option>';
+    categorySelect.innerHTML = html;
+  }
+
+  Papa.parse(CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      allItems = (results.data || []).filter(function (item) {
+        return item['Judul'] && item['Judul'].trim();
+      });
+      populateCategories(allItems);
+      applyFilters();
+    },
+    error: function () {
+      countEl.textContent = '';
+      grid.innerHTML = '';
+      statusEl.textContent = 'Gagal memuat data. Coba muat ulang halaman beberapa saat lagi.';
+      statusEl.style.display = 'block';
+    }
+  });
+
+  searchInput.addEventListener('input', applyFilters);
+  categorySelect.addEventListener('change', applyFilters);
+</script>
+</body>
+</html>
