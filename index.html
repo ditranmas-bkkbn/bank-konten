@@ -33,6 +33,7 @@
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
   .site-header { background: var(--navy); color: #fff; padding: 48px 0 40px; }
+  .site-header .logo { height: 44px; width: auto; margin-bottom: 16px; display: block; }
   .site-header .eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -114,6 +115,8 @@
   .btn:hover { background: var(--navy-2); }
   .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .btn-disabled { background: var(--paper); color: var(--ink-muted); border: 1px dashed var(--line); cursor: default; }
+  .btn-group { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+  .btn-group .btn { margin-top: 0; }
   .site-footer { border-top: 1px solid var(--line); padding: 24px; text-align: center; font-size: 12.5px; color: var(--ink-muted); }
   @media (max-width: 600px) {
     .controls { flex-direction: column; }
@@ -127,6 +130,7 @@
 <body>
   <header class="site-header">
     <div class="wrap">
+      <img src="logo.png" alt="Logo Ditranmas" class="logo" onerror="this.style.display='none'" />
       <p class="eyebrow">Direktorat Bina Peran Serta Masyarakat &middot; Kemendukbangga/BKKBN</p>
       <h1>Bank Konten</h1>
       <p class="lead">Arsip konten resmi yang bisa dicari dan diunduh siapa saja.</p>
@@ -159,10 +163,10 @@
   var categorySelect = document.getElementById('category');
   var countEl = document.getElementById('count');
 
-  function isValidUrl(str) {
-    if (!str) return false;
-    var s = str.trim().toLowerCase();
-    return s.indexOf('http://') === 0 || s.indexOf('https://') === 0;
+  function extractUrls(str) {
+    if (!str) return [];
+    var matches = str.match(/https?:\/\/[^\s"'<>]+/g);
+    return matches || [];
   }
 
   function truncate(text, max) {
@@ -193,8 +197,7 @@
       var kategori = (item['Kategori'] || '').trim();
       var judul = escapeHtml(item['Judul'] || 'Tanpa judul');
       var caption = escapeHtml(truncate(item['Caption'], 160));
-      var link = (item['Link File'] || '').trim();
-      var hasLink = isValidUrl(link);
+      var urls = extractUrls(item['Link File']);
 
       html += '<article class="card">';
       html += '<div class="card-top">';
@@ -205,9 +208,17 @@
       html += '</div>';
       html += '<h3 class="judul">' + judul + '</h3>';
       if (caption) html += '<p class="caption">' + caption + '</p>';
-      html += hasLink
-        ? '<a class="btn" href="' + escapeHtml(link) + '" target="_blank" rel="noopener">Lihat &amp; unduh</a>'
-        : '<span class="btn btn-disabled">Tautan belum tersedia</span>';
+      if (urls.length === 0) {
+        html += '<span class="btn btn-disabled">Tautan belum tersedia</span>';
+      } else if (urls.length === 1) {
+        html += '<a class="btn" href="' + escapeHtml(urls[0]) + '" target="_blank" rel="noopener">Lihat &amp; unduh</a>';
+      } else {
+        html += '<div class="btn-group">';
+        for (var u = 0; u < urls.length; u++) {
+          html += '<a class="btn" href="' + escapeHtml(urls[u]) + '" target="_blank" rel="noopener">Unduh ' + (u + 1) + '</a>';
+        }
+        html += '</div>';
+      }
       html += '</article>';
     }
     grid.innerHTML = html;
