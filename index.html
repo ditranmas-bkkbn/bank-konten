@@ -38,7 +38,7 @@
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
   /* Top nav */
-  .topnav { background: var(--blue-deep); }
+  .topnav { background: var(--blue-deep); position: relative; }
   .topnav-inner {
     max-width: 1080px;
     margin: 0 auto;
@@ -47,11 +47,10 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    flex-wrap: wrap;
   }
   .brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 15px; line-height: 1.2; }
   .brand img { height: 32px; width: auto; }
-  .pillar-nav { list-style: none; display: flex; gap: 0; margin: 0; padding: 0; overflow-x: auto; }
+  .pillar-nav { list-style: none; display: flex; gap: 0; margin: 0; padding: 0; }
   .pillar-nav li { padding: 0 16px; border-left: 1px solid rgba(255,255,255,0.25); flex-shrink: 0; }
   .pillar-nav li:first-child { border-left: none; padding-left: 0; }
   .pillar-nav a {
@@ -65,9 +64,39 @@
   }
   .pillar-nav a:hover { color: var(--gold-light); }
   .pillar-nav a.active { color: var(--gold-light); text-decoration: underline; }
+  .nav-toggle, .nav-close { display: none; background: none; border: none; color: #fff; cursor: pointer; padding: 6px; }
+  .nav-toggle svg, .nav-close svg { width: 24px; height: 24px; display: block; }
+  .nav-overlay { display: none; }
+
   @media (max-width: 760px) {
-    .topnav-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .pillar-nav { width: 100%; }
+    .nav-toggle { display: block; }
+    .pillar-nav {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(280px, 80vw);
+      height: 100vh;
+      background: var(--surface);
+      padding: 64px 24px 24px;
+      z-index: 50;
+      box-shadow: -8px 0 24px rgba(18,58,92,0.2);
+      overflow-y: auto;
+    }
+    .pillar-nav.open { display: flex; }
+    .pillar-nav li { border-left: none; border-bottom: 1px solid var(--line); padding: 14px 0; }
+    .pillar-nav li:first-child { padding-left: 0; }
+    .pillar-nav a { color: var(--ink); max-width: none; }
+    .pillar-nav a:hover, .pillar-nav a.active { color: var(--blue); text-decoration: none; }
+    .nav-close.open { display: block; position: fixed; top: 14px; right: 16px; z-index: 60; color: var(--ink); }
+    .nav-overlay.open {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(18,58,92,0.5);
+      z-index: 40;
+    }
   }
 
   /* Hero */
@@ -76,7 +105,7 @@
     overflow: hidden;
     background: linear-gradient(120deg, var(--gold-deep) 0%, var(--gold) 45%, var(--gold-light) 100%);
     color: var(--blue-deep);
-    padding: 44px 0;
+    padding: 48px 0;
   }
   .hero-inner {
     position: relative;
@@ -91,7 +120,7 @@
     font-family: 'Space Grotesk', sans-serif;
     font-size: clamp(32px, 5vw, 48px);
     font-weight: 700;
-    margin: 0 0 8px;
+    margin: 0 0 10px;
     letter-spacing: -0.01em;
     color: var(--blue-deep);
   }
@@ -102,6 +131,7 @@
     opacity: 0.82;
     margin: 0;
     max-width: 48ch;
+    line-height: 1.6;
   }
   .hero-tag {
     font-family: 'Inter', sans-serif;
@@ -109,6 +139,10 @@
     font-size: 14px;
     color: var(--blue-deep);
     white-space: nowrap;
+  }
+  @media (max-width: 600px) {
+    .site-header { padding: 40px 0 36px; }
+    .hero-inner { flex-direction: column; align-items: flex-start; gap: 18px; }
   }
 
   main.wrap { padding-top: 32px; padding-bottom: 64px; }
@@ -140,13 +174,15 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 12px;
-    padding: 18px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 10px;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(18, 58, 92, 0.1); }
+  .card-thumb { width: 100%; aspect-ratio: 16/9; background: var(--paper); }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
   .card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .kode {
     font-family: 'JetBrains Mono', monospace;
@@ -217,14 +253,21 @@
       <div class="brand">
         <img src="logo.png" alt="Logo Kemendukbangga/BKKBN" onerror="this.style.display='none'" />
       </div>
-      <ul class="pillar-nav">
+      <button type="button" id="navToggle" class="nav-toggle" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <ul class="pillar-nav" id="pillarNav">
         <li><a href="#konten" data-category="Program Prioritas Presiden">Program Prioritas Presiden</a></li>
         <li><a href="#konten" data-category="Program Prioritas Kemendukbangga/BKKBN">Program Prioritas Kemendukbangga/BKKBN</a></li>
         <li><a href="#konten" data-category="Program Kependudukan">Program Kependudukan</a></li>
         <li><a href="#konten" data-category="Program Pembangunan Keluarga">Program Pembangunan Keluarga</a></li>
         <li><a href="#konten" data-category="Program Keluarga Berencana">Program Keluarga Berencana</a></li>
       </ul>
+      <button type="button" id="navClose" class="nav-close" aria-label="Tutup menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
     </div>
+    <div class="nav-overlay" id="navOverlay"></div>
   </nav>
 
   <header class="site-header">
@@ -277,6 +320,29 @@
   var countEl = document.getElementById('count');
   var paginationEl = document.getElementById('pagination');
   var pillarLinks = document.querySelectorAll('.pillar-nav a');
+  var navToggle = document.getElementById('navToggle');
+  var navClose = document.getElementById('navClose');
+  var navOverlay = document.getElementById('navOverlay');
+  var pillarNavEl = document.getElementById('pillarNav');
+
+  function openNav() {
+    pillarNavEl.classList.add('open');
+    navOverlay.classList.add('open');
+    navClose.classList.add('open');
+    navToggle.setAttribute('aria-expanded', 'true');
+  }
+  function closeNav() {
+    pillarNavEl.classList.remove('open');
+    navOverlay.classList.remove('open');
+    navClose.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+  navToggle.addEventListener('click', openNav);
+  navClose.addEventListener('click', closeNav);
+  navOverlay.addEventListener('click', closeNav);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeNav();
+  });
 
   function extractUrls(str) {
     if (!str) return [];
@@ -313,8 +379,13 @@
       var judul = escapeHtml(item['Judul'] || 'Tanpa judul');
       var caption = escapeHtml(truncate(item['Caption'], 160));
       var urls = extractUrls(item['Link File']);
+      var thumb = (item['Thumbnail'] || '').trim();
 
       html += '<article class="card">';
+      if (thumb) {
+        html += '<div class="card-thumb"><img src="' + escapeHtml(thumb) + '" alt="" loading="lazy" onerror="this.closest(\'.card-thumb\').style.display=\'none\'" /></div>';
+      }
+      html += '<div class="card-body">';
       html += '<div class="card-top">';
       if (kode) html += '<span class="kode">' + kode + '</span>';
       html += kategori
@@ -334,6 +405,7 @@
         }
         html += '</div>';
       }
+      html += '</div>';
       html += '</article>';
     }
     grid.innerHTML = html;
@@ -452,6 +524,7 @@
       pillarLinks.forEach(function (l) { l.classList.remove('active'); });
       link.classList.add('active');
       applyFilters();
+      closeNav();
       document.getElementById('konten').scrollIntoView({ behavior: 'smooth' });
     });
   });
