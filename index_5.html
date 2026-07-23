@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bank Konten — Ditranmas Kemendukbangga/BKKBN</title>
+<meta name="description" content="Arsip konten resmi Direktorat Bina Peran Serta Masyarakat, Kemendukbangga/BKKBN — cari dan unduh konten kapan saja." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --blue-deep: #123a5c;
+    --blue: #1d71b8;
+    --blue-light: #89cfe8;
+    --blue-pale: #e7f2fa;
+    --gold-deep: #ae862e;
+    --gold: #d2ac47;
+    --gold-light: #edc968;
+    --gold-pale: #fbf1d6;
+    --paper: #F1EFE6;
+    --surface: #FFFFFF;
+    --ink: #26251F;
+    --ink-muted: #6B685D;
+    --line: #DBD6C7;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Top nav */
+  .topnav { background: var(--blue-deep); position: relative; }
+  .topnav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 15px; line-height: 1.2; }
+  .brand img { height: 32px; width: auto; }
+  .pillar-nav { list-style: none; display: flex; gap: 0; margin: 0; padding: 0; }
+  .pillar-nav li { padding: 0 16px; border-left: 1px solid rgba(255,255,255,0.25); flex-shrink: 0; }
+  .pillar-nav li:first-child { border-left: none; padding-left: 0; }
+  .pillar-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.3;
+    display: block;
+    max-width: 150px;
+  }
+  .pillar-nav a:hover { color: var(--gold-light); }
+  .pillar-nav a.active { color: var(--gold-light); text-decoration: underline; }
+  .nav-toggle, .nav-close { display: none; background: none; border: none; color: #fff; cursor: pointer; padding: 6px; }
+  .nav-toggle svg, .nav-close svg { width: 24px; height: 24px; display: block; }
+  .nav-overlay { display: none; }
+
+  @media (max-width: 760px) {
+    .nav-toggle { display: block; }
+    .pillar-nav {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(280px, 80vw);
+      height: 100vh;
+      background: var(--surface);
+      padding: 64px 24px 24px;
+      z-index: 50;
+      box-shadow: -8px 0 24px rgba(18,58,92,0.2);
+      overflow-y: auto;
+    }
+    .pillar-nav.open { display: flex; }
+    .pillar-nav li { border-left: none; border-bottom: 1px solid var(--line); padding: 14px 0; }
+    .pillar-nav li:first-child { padding-left: 0; }
+    .pillar-nav a { color: var(--ink); max-width: none; }
+    .pillar-nav a:hover, .pillar-nav a.active { color: var(--blue); text-decoration: none; }
+    .nav-close.open { display: block; position: fixed; top: 14px; right: 16px; z-index: 60; color: var(--ink); }
+    .nav-overlay.open {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(18,58,92,0.5);
+      z-index: 40;
+    }
+  }
+
+  /* Hero */
+  .site-header {
+    background: #FBF7EC;
+    color: var(--blue-deep);
+    padding: 64px 0;
+  }
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 22px;
+  }
+  .hero-text { max-width: 760px; }
+  .site-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(26px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--blue-deep);
+  }
+  .site-header h1 .hl-gold { color: var(--gold-deep); }
+  .site-header .lead {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    color: var(--blue-deep);
+    opacity: 0.78;
+    margin: 14px auto 0;
+    max-width: 48ch;
+    line-height: 1.6;
+  }
+  .btn-hero {
+    display: inline-block;
+    background: var(--blue-deep);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 30px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+  .btn-hero:hover { background: var(--blue); }
+  .btn-hero:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  @media (max-width: 600px) {
+    .site-header { padding: 48px 0 40px; }
+  }
+
+  main.wrap { padding-top: 32px; padding-bottom: 64px; }
+  .controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  #search, #category {
+    height: 46px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  #search { flex: 1 1 280px; }
+  #category { flex: 0 1 220px; }
+  #search:focus-visible, #category:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+  }
+  .count { font-size: 13px; color: var(--ink-muted); margin: 0 0 20px; }
+  .status { padding: 32px 0; text-align: center; color: var(--ink-muted); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(18, 58, 92, 0.1); }
+  .card-thumb { width: 100%; height: 200px; overflow: hidden; background: var(--paper); flex-shrink: 0; }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .kode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--blue-deep);
+    background: var(--blue-pale);
+    border: 1px solid var(--blue-light);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .tag { font-size: 11px; font-weight: 600; color: var(--blue-deep); background: var(--gold-pale); border-radius: 4px; padding: 2px 8px; }
+  .tag-muted { color: var(--ink-muted); background: var(--paper); }
+  .judul {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .caption { font-family: 'Poppins', sans-serif; font-size: 13.5px; color: var(--ink-muted); margin: 0; white-space: pre-line; }
+  .btn {
+    margin-top: auto;
+    display: inline-block;
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--blue-deep);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 100%); }
+  .btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .btn-disabled { background: var(--paper); color: var(--ink-muted); border: 1px dashed var(--line); cursor: default; }
+  .btn-group { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+  .btn-group .btn { margin-top: 0; }
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 32px; }
+  .pagination button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .pagination button:hover:not(:disabled) { background: var(--blue-pale); border-color: var(--blue-light); }
+  .pagination button:disabled { opacity: 0.4; cursor: default; }
+  .pagination .page-info { font-size: 13px; color: var(--ink-muted); }
+
+  /* Footer */
+  .site-footer { background: var(--blue-deep); color: #C9D8E6; padding: 24px; text-align: center; font-size: 12.5px; }
+  .site-footer .footer-org { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; color: #fff; margin: 0 0 4px; }
+  .site-footer p:last-child { margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="brand">
+        <img src="logo.png" alt="Logo Kemendukbangga/BKKBN" onerror="this.style.display='none'" />
+      </div>
+      <button type="button" id="navToggle" class="nav-toggle" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <ul class="pillar-nav" id="pillarNav">
+        <li><a href="#konten" data-category="Program Prioritas Presiden">Program Prioritas Presiden</a></li>
+        <li><a href="#konten" data-category="Program Prioritas Kemendukbangga/BKKBN">Program Prioritas Kemendukbangga/BKKBN</a></li>
+        <li><a href="#konten" data-category="Program Kependudukan">Program Kependudukan</a></li>
+        <li><a href="#konten" data-category="Program Pembangunan Keluarga">Program Pembangunan Keluarga</a></li>
+        <li><a href="#konten" data-category="Program Keluarga Berencana">Program Keluarga Berencana</a></li>
+      </ul>
+      <button type="button" id="navClose" class="nav-close" aria-label="Tutup menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
+  </nav>
+
+  <header class="site-header">
+    <div class="wrap hero-inner">
+      <div class="hero-text">
+        <h1>Kumpulan Materi dan <span class="hl-gold">Bahan Publikasi Konten</span> dari akun Kemendukbangga_Official</h1>
+        <p class="lead">Konten yang dibuat oleh Direktorat Bina Peran Serta Masyarakat</p>
+      </div>
+      <a href="#konten" class="btn-hero">Cari konten yang kamu butuhkan</a>
+    </div>
+  </header>
+
+  <main class="wrap" id="konten">
+    <div class="controls">
+      <input id="search" type="text" placeholder="Cari judul atau kata kunci..." aria-label="Cari konten" />
+      <select id="category" aria-label="Filter kategori">
+        <option value="__all__">Semua kategori</option>
+      </select>
+    </div>
+    <p id="count" class="count" aria-live="polite">Memuat konten&hellip;</p>
+    <p id="status" class="status" style="display:none;"></p>
+    <div id="grid" class="grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </main>
+
+  <footer class="site-footer">
+    <p class="footer-org">Direktorat Bina Peran Serta Masyarakat &ndash; Kemendukbangga/BKKBN</p>
+    <p>Bank Konten diproduksi oleh Direktorat Bina Peran Serta Masyarakat.</p>
+  </footer>
+
+<script>
+  var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM1hUO5g2v9dHkylwc9PxIRjK0gfU6z-nEg58y2Y7fD7ps6ZBkPKBY7q6i3DsKh8-8ksy1wKgKqUPC/pub?gid=667875816&single=true&output=csv";
+  var PAGE_SIZE = 10;
+  var KNOWN_CATEGORIES = [
+    'Program Prioritas Presiden',
+    'Program Prioritas Kemendukbangga/BKKBN',
+    'Program Kependudukan',
+    'Program Pembangunan Keluarga',
+    'Program Keluarga Berencana'
+  ];
+
+  var allItems = [];
+  var currentFiltered = [];
+  var currentPage = 1;
+
+  var grid = document.getElementById('grid');
+  var statusEl = document.getElementById('status');
+  var searchInput = document.getElementById('search');
+  var categorySelect = document.getElementById('category');
+  var countEl = document.getElementById('count');
+  var paginationEl = document.getElementById('pagination');
+  var pillarLinks = document.querySelectorAll('.pillar-nav a');
+  var navToggle = document.getElementById('navToggle');
+  var navClose = document.getElementById('navClose');
+  var navOverlay = document.getElementById('navOverlay');
+  var pillarNavEl = document.getElementById('pillarNav');
+
+  function openNav() {
+    pillarNavEl.classList.add('open');
+    navOverlay.classList.add('open');
+    navClose.classList.add('open');
+    navToggle.setAttribute('aria-expanded', 'true');
+  }
+  function closeNav() {
+    pillarNavEl.classList.remove('open');
+    navOverlay.classList.remove('open');
+    navClose.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+  navToggle.addEventListener('click', openNav);
+  navClose.addEventListener('click', closeNav);
+  navOverlay.addEventListener('click', closeNav);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeNav();
+  });
+
+  function extractUrls(str) {
+    if (!str) return [];
+    var matches = str.match(/https?:\/\/[^\s"'<>]+/g);
+    return matches || [];
+  }
+
+  function truncate(text, max) {
+    if (!text) return '';
+    var clean = text.trim();
+    if (clean.length <= max) return clean;
+    return clean.slice(0, max).trim() + '\u2026';
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function renderCards(items) {
+    if (items.length === 0) {
+      grid.innerHTML = '';
+      statusEl.textContent = 'Tidak ada konten yang cocok. Coba kata kunci lain.';
+      statusEl.style.display = 'block';
+      return;
+    }
+    statusEl.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var kode = escapeHtml(item['Kode Konten'] || '');
+      var kategori = (item['Kategori'] || '').trim();
+      var judul = escapeHtml(item['Judul'] || 'Tanpa judul');
+      var caption = escapeHtml(truncate(item['Caption'], 160));
+      var urls = extractUrls(item['Link File']);
+      var thumb = (item['Thumbnail'] || '').trim();
+
+      html += '<article class="card">';
+      if (thumb) {
+        html += '<div class="card-thumb"><img src="' + escapeHtml(thumb) + '" alt="" loading="lazy" onerror="this.closest(\'.card-thumb\').style.display=\'none\'" /></div>';
+      }
+      html += '<div class="card-body">';
+      html += '<div class="card-top">';
+      if (kode) html += '<span class="kode">' + kode + '</span>';
+      html += kategori
+        ? '<span class="tag">' + escapeHtml(kategori) + '</span>'
+        : '<span class="tag tag-muted">Belum dikategorikan</span>';
+      html += '</div>';
+      html += '<h3 class="judul">' + judul + '</h3>';
+      if (caption) html += '<p class="caption">' + caption + '</p>';
+      if (urls.length === 0) {
+        html += '<span class="btn btn-disabled">Tautan belum tersedia</span>';
+      } else if (urls.length === 1) {
+        html += '<a class="btn" href="' + escapeHtml(urls[0]) + '" target="_blank" rel="noopener">Lihat &amp; unduh</a>';
+      } else {
+        html += '<div class="btn-group">';
+        for (var u = 0; u < urls.length; u++) {
+          html += '<a class="btn" href="' + escapeHtml(urls[u]) + '" target="_blank" rel="noopener">Unduh ' + (u + 1) + '</a>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+      html += '</article>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      return;
+    }
+    var html = '';
+    html += '<button type="button" id="prevPage"' + (currentPage === 1 ? ' disabled' : '') + '>&lsaquo; Sebelumnya</button>';
+    html += '<span class="page-info">Halaman ' + currentPage + ' dari ' + totalPages + '</span>';
+    html += '<button type="button" id="nextPage"' + (currentPage === totalPages ? ' disabled' : '') + '>Selanjutnya &rsaquo;</button>';
+    paginationEl.innerHTML = html;
+
+    document.getElementById('prevPage').addEventListener('click', function () {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+    document.getElementById('nextPage').addEventListener('click', function () {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  function renderPage() {
+    var total = currentFiltered.length;
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * PAGE_SIZE;
+    var pageItems = currentFiltered.slice(start, start + PAGE_SIZE);
+
+    countEl.textContent = total === 0
+      ? '0 dari ' + allItems.length + ' konten'
+      : 'Menampilkan ' + (start + 1) + '\u2013' + Math.min(start + PAGE_SIZE, total) + ' dari ' + total + ' konten';
+
+    renderCards(pageItems);
+    renderPagination(totalPages);
+  }
+
+  function applyFilters() {
+    var q = searchInput.value.trim().toLowerCase();
+    var cat = categorySelect.value;
+    currentFiltered = allItems.filter(function (item) {
+      var matchesQuery = !q ||
+        (item['Judul'] || '').toLowerCase().indexOf(q) !== -1 ||
+        (item['Caption'] || '').toLowerCase().indexOf(q) !== -1 ||
+        (item['Kode Konten'] || '').toLowerCase().indexOf(q) !== -1;
+      var itemCat = (item['Kategori'] || '').trim();
+      var matchesCat = cat === '__all__' ||
+        (cat === '__uncategorized__' ? itemCat === '' : itemCat.toLowerCase() === cat.toLowerCase());
+      return matchesQuery && matchesCat;
+    });
+    currentPage = 1;
+    renderPage();
+  }
+
+  function populateCategories(items) {
+    var cats = KNOWN_CATEGORIES.slice();
+    var seen = {};
+    KNOWN_CATEGORIES.forEach(function (c) { seen[c.toLowerCase()] = true; });
+    var hasUncategorized = false;
+    items.forEach(function (item) {
+      var c = (item['Kategori'] || '').trim();
+      if (c) {
+        var key = c.toLowerCase();
+        if (!seen[key]) { seen[key] = true; cats.push(c); }
+      } else {
+        hasUncategorized = true;
+      }
+    });
+    var html = '<option value="__all__">Semua kategori</option>';
+    cats.forEach(function (c) {
+      html += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+    });
+    if (hasUncategorized) html += '<option value="__uncategorized__">Belum dikategorikan</option>';
+    categorySelect.innerHTML = html;
+  }
+
+  Papa.parse(CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      allItems = (results.data || []).filter(function (item) {
+        return item['Judul'] && item['Judul'].trim();
+      });
+      populateCategories(allItems);
+      applyFilters();
+    },
+    error: function () {
+      countEl.textContent = '';
+      grid.innerHTML = '';
+      statusEl.textContent = 'Gagal memuat data. Coba muat ulang halaman beberapa saat lagi.';
+      statusEl.style.display = 'block';
+    }
+  });
+
+  searchInput.addEventListener('input', applyFilters);
+  categorySelect.addEventListener('change', function () {
+    pillarLinks.forEach(function (l) { l.classList.remove('active'); });
+    applyFilters();
+  });
+  pillarLinks.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var cat = link.getAttribute('data-category');
+      categorySelect.value = cat;
+      pillarLinks.forEach(function (l) { l.classList.remove('active'); });
+      link.classList.add('active');
+      applyFilters();
+      closeNav();
+      document.getElementById('konten').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
