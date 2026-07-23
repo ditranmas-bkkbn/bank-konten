@@ -101,48 +101,53 @@
 
   /* Hero */
   .site-header {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(120deg, var(--gold-deep) 0%, var(--gold) 45%, var(--gold-light) 100%);
+    background: #FBF7EC;
     color: var(--blue-deep);
-    padding: 48px 0;
+    padding: 64px 0;
   }
   .hero-inner {
-    position: relative;
-    z-index: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 22px;
   }
+  .hero-text { max-width: 760px; }
   .site-header h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(32px, 5vw, 48px);
+    font-size: clamp(26px, 4vw, 40px);
     font-weight: 700;
-    margin: 0 0 10px;
+    line-height: 1.3;
+    margin: 0;
     letter-spacing: -0.01em;
     color: var(--blue-deep);
   }
+  .site-header h1 .hl-gold { color: var(--gold-deep); }
   .site-header .lead {
     font-family: 'Poppins', sans-serif;
     font-size: 15px;
     color: var(--blue-deep);
-    opacity: 0.82;
-    margin: 0;
+    opacity: 0.78;
+    margin: 14px auto 0;
     max-width: 48ch;
     line-height: 1.6;
   }
-  .hero-tag {
+  .btn-hero {
+    display: inline-block;
+    background: var(--blue-deep);
+    color: #fff;
     font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--blue-deep);
-    white-space: nowrap;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 30px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.15s ease;
   }
+  .btn-hero:hover { background: var(--blue); }
+  .btn-hero:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
   @media (max-width: 600px) {
-    .site-header { padding: 40px 0 36px; }
-    .hero-inner { flex-direction: column; align-items: flex-start; gap: 18px; }
+    .site-header { padding: 48px 0 40px; }
   }
 
   main.wrap { padding-top: 32px; padding-bottom: 64px; }
@@ -273,10 +278,10 @@
   <header class="site-header">
     <div class="wrap hero-inner">
       <div class="hero-text">
-        <h1>Bank Konten</h1>
-        <p class="lead">Arsip konten resmi yang dapat diunduh dan digunakan untuk penyebarluasan informasi</p>
+        <h1>Kumpulan Materi dan <span class="hl-gold">Bahan Publikasi Konten</span> dari akun Kemendukbangga_Official</h1>
+        <p class="lead">Konten yang dibuat oleh Direktorat Bina Peran Serta Masyarakat</p>
       </div>
-      <div class="hero-tag">#1Konten1000Desa</div>
+      <a href="#konten" class="btn-hero">Cari konten yang kamu butuhkan</a>
     </div>
   </header>
 
