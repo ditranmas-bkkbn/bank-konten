@@ -7,14 +7,18 @@
 <meta name="description" content="Arsip konten resmi Direktorat Bina Peran Serta Masyarakat, Kemendukbangga/BKKBN — cari dan unduh konten kapan saja." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root {
-    --navy: #182644;
-    --navy-2: #24365E;
-    --gold: #C6862E;
-    --gold-pale: #F3E4C6;
+    --blue-deep: #123a5c;
+    --blue: #1d71b8;
+    --blue-light: #89cfe8;
+    --blue-pale: #e7f2fa;
+    --gold-deep: #ae862e;
+    --gold: #d2ac47;
+    --gold-light: #edc968;
+    --gold-pale: #fbf1d6;
     --paper: #F1EFE6;
     --surface: #FFFFFF;
     --ink: #26251F;
@@ -32,28 +36,32 @@
     line-height: 1.5;
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-  .site-header { background: var(--navy); color: #fff; padding: 48px 0 40px; }
-  .site-header .logo { height: 44px; width: auto; margin-bottom: 16px; display: block; }
-  .site-header .eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin: 0 0 12px;
+  .site-header {
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue) 55%, var(--blue-light) 130%);
+    color: #fff;
+    padding: 48px 0 40px;
   }
+  .site-header .logo { height: 44px; width: auto; margin-bottom: 16px; display: block; }
   .site-header h1 {
     font-family: 'Space Grotesk', sans-serif;
     font-size: clamp(32px, 5vw, 48px);
     font-weight: 700;
     margin: 0 0 8px;
-    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
-  .site-header .lead { font-size: 16px; color: #D8DCE6; margin: 0; max-width: 44ch; }
+  .site-header .lead {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    color: #E3ECF5;
+    margin: 0;
+    max-width: 44ch;
+  }
   main.wrap { padding-top: 32px; padding-bottom: 64px; }
   .controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
   #search, #category {
-    padding: 12px 16px;
+    height: 46px;
+    padding: 0 16px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     font-family: 'Inter', sans-serif;
@@ -64,7 +72,7 @@
   #search { flex: 1 1 280px; }
   #category { flex: 0 1 220px; }
   #search:focus-visible, #category:focus-visible {
-    outline: 2px solid var(--navy);
+    outline: 2px solid var(--blue);
     outline-offset: 1px;
   }
   .count { font-size: 13px; color: var(--ink-muted); margin: 0 0 20px; }
@@ -84,40 +92,69 @@
     gap: 10px;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(24, 38, 68, 0.08); }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(18, 58, 92, 0.1); }
   .card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .kode {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: var(--navy);
-    background: var(--paper);
-    border: 1px solid var(--line);
+    color: var(--blue-deep);
+    background: var(--blue-pale);
+    border: 1px solid var(--blue-light);
     border-radius: 4px;
     padding: 2px 6px;
   }
-  .tag { font-size: 11px; font-weight: 600; color: var(--navy); background: var(--gold-pale); border-radius: 4px; padding: 2px 8px; }
+  .tag { font-size: 11px; font-weight: 600; color: var(--blue-deep); background: var(--gold-pale); border-radius: 4px; padding: 2px 8px; }
   .tag-muted { color: var(--ink-muted); background: var(--paper); }
-  .judul { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 500; margin: 0; line-height: 1.3; }
-  .caption { font-size: 13.5px; color: var(--ink-muted); margin: 0; white-space: pre-line; }
+  .judul {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .caption { font-family: 'Poppins', sans-serif; font-size: 13.5px; color: var(--ink-muted); margin: 0; white-space: pre-line; }
   .btn {
     margin-top: auto;
     display: inline-block;
     text-align: center;
     padding: 10px 14px;
     border-radius: 8px;
-    background: var(--navy);
-    color: #fff;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--blue-deep);
     text-decoration: none;
     font-size: 14px;
-    font-weight: 500;
-    transition: background 0.15s ease;
+    font-weight: 600;
+    transition: background 0.15s ease, transform 0.15s ease;
   }
-  .btn:hover { background: var(--navy-2); }
-  .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .btn:hover { background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 100%); }
+  .btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   .btn-disabled { background: var(--paper); color: var(--ink-muted); border: 1px dashed var(--line); cursor: default; }
   .btn-group { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
   .btn-group .btn { margin-top: 0; }
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 32px; }
+  .pagination button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .pagination button:hover:not(:disabled) { background: var(--blue-pale); border-color: var(--blue-light); }
+  .pagination button:disabled { opacity: 0.4; cursor: default; }
+  .pagination .page-info { font-size: 13px; color: var(--ink-muted); }
   .site-footer { border-top: 1px solid var(--line); padding: 24px; text-align: center; font-size: 12.5px; color: var(--ink-muted); }
+  .site-footer .footer-org {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 0 0 6px;
+  }
   @media (max-width: 600px) {
     .controls { flex-direction: column; }
     #category { flex-basis: auto; }
@@ -131,7 +168,6 @@
   <header class="site-header">
     <div class="wrap">
       <img src="logo.png" alt="Logo Ditranmas" class="logo" onerror="this.style.display='none'" />
-      <p class="eyebrow">Direktorat Bina Peran Serta Masyarakat &middot; Kemendukbangga/BKKBN</p>
       <h1>Bank Konten</h1>
       <p class="lead">Arsip konten resmi yang bisa dicari dan diunduh siapa saja.</p>
     </div>
@@ -147,21 +183,28 @@
     <p id="count" class="count" aria-live="polite">Memuat konten&hellip;</p>
     <p id="status" class="status" style="display:none;"></p>
     <div id="grid" class="grid"></div>
+    <div id="pagination" class="pagination"></div>
   </main>
 
   <footer class="site-footer">
-    <p>Diproduksi oleh Direktorat Bina Peran Serta Masyarakat (Ditranmas), Kemendukbangga/BKKBN.</p>
+    <p class="footer-org">Direktorat Bina Peran Serta Masyarakat &middot; Kemendukbangga/BKKBN</p>
+    <p>Bank Konten diproduksi oleh Ditranmas.</p>
   </footer>
 
 <script>
   var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM1hUO5g2v9dHkylwc9PxIRjK0gfU6z-nEg58y2Y7fD7ps6ZBkPKBY7q6i3DsKh8-8ksy1wKgKqUPC/pub?gid=667875816&single=true&output=csv";
+  var PAGE_SIZE = 10;
 
   var allItems = [];
+  var currentFiltered = [];
+  var currentPage = 1;
+
   var grid = document.getElementById('grid');
   var statusEl = document.getElementById('status');
   var searchInput = document.getElementById('search');
   var categorySelect = document.getElementById('category');
   var countEl = document.getElementById('count');
+  var paginationEl = document.getElementById('pagination');
 
   function extractUrls(str) {
     if (!str) return [];
@@ -224,10 +267,52 @@
     grid.innerHTML = html;
   }
 
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      return;
+    }
+    var html = '';
+    html += '<button type="button" id="prevPage"' + (currentPage === 1 ? ' disabled' : '') + '>&lsaquo; Sebelumnya</button>';
+    html += '<span class="page-info">Halaman ' + currentPage + ' dari ' + totalPages + '</span>';
+    html += '<button type="button" id="nextPage"' + (currentPage === totalPages ? ' disabled' : '') + '>Selanjutnya &rsaquo;</button>';
+    paginationEl.innerHTML = html;
+
+    document.getElementById('prevPage').addEventListener('click', function () {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+    document.getElementById('nextPage').addEventListener('click', function () {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  function renderPage() {
+    var total = currentFiltered.length;
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * PAGE_SIZE;
+    var pageItems = currentFiltered.slice(start, start + PAGE_SIZE);
+
+    countEl.textContent = total === 0
+      ? '0 dari ' + allItems.length + ' konten'
+      : 'Menampilkan ' + (start + 1) + '\u2013' + Math.min(start + PAGE_SIZE, total) + ' dari ' + total + ' konten';
+
+    renderCards(pageItems);
+    renderPagination(totalPages);
+  }
+
   function applyFilters() {
     var q = searchInput.value.trim().toLowerCase();
     var cat = categorySelect.value;
-    var filtered = allItems.filter(function (item) {
+    currentFiltered = allItems.filter(function (item) {
       var matchesQuery = !q ||
         (item['Judul'] || '').toLowerCase().indexOf(q) !== -1 ||
         (item['Caption'] || '').toLowerCase().indexOf(q) !== -1 ||
@@ -237,8 +322,8 @@
         (cat === '__uncategorized__' ? itemCat === '' : itemCat === cat);
       return matchesQuery && matchesCat;
     });
-    countEl.textContent = filtered.length + ' dari ' + allItems.length + ' konten';
-    renderCards(filtered);
+    currentPage = 1;
+    renderPage();
   }
 
   function populateCategories(items) {
